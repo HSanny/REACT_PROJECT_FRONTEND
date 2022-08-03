@@ -1,11 +1,16 @@
 import React, { Suspense, Component, Fragment } from "react";
-//https://blog.csdn.net/qq_37974755/article/details/123166334 
-// : Switch -> Routes, Redirect -> Navigate, withRouter as realWithRouter -> useNavigate
-// import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
-import { Route, Switch, Redirect, withRouter as realWithRouter } from "react-router-dom";
 // Here is the routing profile
-import routes from './router/Index'
+import { Route, Switch, Redirect, withRouter as realWithRouter } from "react-router-dom";
+import routes from "./router/Index";
+
+// Common style
 import 'antd/dist/antd.css';
+import './assets/style/public.less';
+
+// redux
+import { changeName, changeAge } from "./redux/action/TestAction";
+import { asyncChangeName } from "./redux/asyncAction/AsyncTestAction";
+import { connect as realConnect } from "react-redux";
 
 type StateType = {
   [propName: string]: any;
@@ -18,10 +23,28 @@ interface App {
   props: PropType;
 }
 
+// Get redux
+const mapStateToProps = (state: any) => {
+  return {
+    state,
+  };
+};
+const connect: any = realConnect;
+
 // Get routing information
 const withRouter: any = realWithRouter;
 @withRouter
+@connect(mapStateToProps, { changeName, changeAge, asyncChangeName })
 class App extends Component {
+  componentDidMount() {
+    // Call the synchronous action and asynchronous action methods of the specified reducer in redux
+    this.props.changeName('Zhang San');
+    this.props.changeAge(25);
+    this.props.asyncChangeName();
+    // Gets the state of the specified reducer in the reducer
+    console.log("object", this.props.state.TestReducer);
+  }
+
   render() {
     return (
       <Fragment>
